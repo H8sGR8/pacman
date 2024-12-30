@@ -1,0 +1,8 @@
+{
+    "C_Cpp.errorSquiggles": "enabled",
+    "files.associations": {
+        "qpushbutton": "cpp",
+        "qapplication": "cpp"
+    },
+    "C_Cpp.default.compilerPath": "/usr/bin/g++"
+}
