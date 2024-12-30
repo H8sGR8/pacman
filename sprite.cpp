@@ -7,9 +7,10 @@ Sprite::Sprite(QWidget* parent) : QWidget(parent){
 
 void Sprite::paintEvent(QPaintEvent* /*evenet*/){}
 
-void Sprite::setStartPos(int x, int y){
+void Sprite::setStartPos(int y, int x){
     cords.x = x;
     cords.y = y;
+    move(cords.x * 30 - 4, cords.y * 30 - 4);
     previousPosition.x = pos().x();
     previousPosition.y = pos().y();
 }
@@ -28,7 +29,7 @@ void Sprite::moveSprite(){
                 nextDirection = NO_DIR;
                 break;
             }
-            move(cords.x * 30 + 6, pos().y() - 1);
+            move(cords.x * 30 - 4, pos().y() - 1);
             break;
         case(LEFT):
             if(simpleMap[cords.y][cords.x - 1] == 1){
@@ -36,7 +37,7 @@ void Sprite::moveSprite(){
                 nextDirection = NO_DIR;
                 break;
             }
-            move(pos().x() - 1, cords.y * 30 + 6);
+            move(pos().x() - 1, cords.y * 30 - 4);
             break;
         case(DOWN):
             if(simpleMap[cords.y + 1][cords.x] == 1){
@@ -44,7 +45,7 @@ void Sprite::moveSprite(){
                 nextDirection = NO_DIR;
                 break;
             }
-            move(cords.x * 30 + 6, pos().y() + 1);
+            move(cords.x * 30 - 4, pos().y() + 1);
             break;
         case(RIGHT):
             if(simpleMap[cords.y][cords.x + 1] == 1){
@@ -52,7 +53,7 @@ void Sprite::moveSprite(){
                 nextDirection = NO_DIR;
                 break;
             }
-            move(pos().x() + 1, cords.y * 30 + 6);
+            move(pos().x() + 1, cords.y * 30 - 4);
             break;
     }
     if(abs(previousPosition.x - pos().x()) == 30){
