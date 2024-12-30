@@ -330,7 +330,6 @@ distdir: FORCE
 
 clean: compiler_clean 
 	-$(DEL_FILE) $(OBJECTS)
-	-$(DEL_FILE) $(TARGET)
 	-$(DEL_FILE) *~ core *.core
 
 
