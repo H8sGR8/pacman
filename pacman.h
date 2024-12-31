@@ -1,12 +1,20 @@
 #pragma once
 
 #include "sprite.h"
+#include "points.h"
 
 class Pacman : public Sprite{
 
     protected:
         virtual void paintEvent(QPaintEvent*);
+        virtual void increasePoints(int);
+    public slots:
+        void moveSprite();
+    signals:
+        void pointsChanged(int);
     public:
+        int points;
+        Point* pointsMap[31][28];
         void keyPressEvent(QKeyEvent*);
-        Pacman(QWidget* parent = 0);
+        Pacman(pair<int, int>, QWidget* parent = 0);
 };

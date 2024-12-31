@@ -14,8 +14,7 @@ public:
 	Game(QWidget *parent = 0);
 };
 
-Game::Game(QWidget *parent)
-	: QWidget(parent)
+Game::Game(QWidget *parent) : QWidget(parent)
 {
 	QPushButton *quit = new QPushButton("QUIT");
 	connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
@@ -24,8 +23,8 @@ Game::Game(QWidget *parent)
 	move(QApplication::desktop()->geometry().center() - rect().center());
 	map = new Map();
 	QGridLayout	*grid = new QGridLayout;
-	grid->addWidget(map, 0, 0, 31, 28);
-	grid->addWidget(quit, 10, 29);
+	grid->addWidget(map, 0, 0, 1, 1);
+	grid->addWidget(quit, 0, 2);
 	setLayout(grid);
 }
 

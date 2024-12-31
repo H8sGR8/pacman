@@ -56,12 +56,14 @@ SOURCES       = game.cpp \
 		ghosts.cpp \
 		map.cpp \
 		pacman.cpp \
-		sprite.cpp 
+		sprite.cpp \
+		points.cpp 
 OBJECTS       = game.o \
 		ghosts.o \
 		map.o \
 		pacman.o \
-		sprite.o
+		sprite.o \
+		points.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -140,11 +142,13 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		pacman.pro ghosts.h \
 		map.h \
 		pacman.h \
-		sprite.h game.cpp \
+		sprite.h \
+		points.h game.cpp \
 		ghosts.cpp \
 		map.cpp \
 		pacman.cpp \
-		sprite.cpp
+		sprite.cpp \
+		points.cpp
 QMAKE_TARGET  = pacman
 DESTDIR       = 
 TARGET        = pacman
@@ -324,8 +328,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ghosts.h map.h pacman.h sprite.h $(DISTDIR)/
-	$(COPY_FILE) --parents game.cpp ghosts.cpp map.cpp pacman.cpp sprite.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ghosts.h map.h pacman.h sprite.h points.h $(DISTDIR)/
+	$(COPY_FILE) --parents game.cpp ghosts.cpp map.cpp pacman.cpp sprite.cpp points.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -378,7 +382,8 @@ compiler_clean: compiler_moc_predefs_clean
 
 game.o: game.cpp map.h \
 		pacman.h \
-		sprite.h
+		sprite.h \
+		points.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game.o game.cpp
 
 ghosts.o: ghosts.cpp ghosts.h \
@@ -387,15 +392,20 @@ ghosts.o: ghosts.cpp ghosts.h \
 
 map.o: map.cpp map.h \
 		pacman.h \
-		sprite.h
+		sprite.h \
+		points.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o map.o map.cpp
 
 pacman.o: pacman.cpp pacman.h \
-		sprite.h
+		sprite.h \
+		points.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o pacman.o pacman.cpp
 
 sprite.o: sprite.cpp sprite.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sprite.o sprite.cpp
+
+points.o: points.cpp points.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o points.o points.cpp
 
 ####### Install
 
