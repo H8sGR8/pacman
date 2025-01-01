@@ -3,28 +3,44 @@
 #include <QPushButton>
 #include <QDesktopWidget>
 #include <QPalette>
+#include <QLabel>
+#include <QDebug>
+#include <string>
 
 #include "map.h"
 #include "pacman.h"
 
-class Game : public QWidget
-{
-public:
-	Map *map;
-	Game(QWidget *parent = 0);
+class Game : public QWidget{
+
+	private:
+		QPushButton *quit;
+		QLabel *points;
+		void updatePoints(int);
+	public:
+		Map *map;
+		Game(QWidget *parent = 0);
 };
+
+void Game::updatePoints(int newPoints){
+	qDebug() << newPoints;
+	points->setText(QString::fromStdString("Points: " + to_string(newPoints)));
+}
 
 Game::Game(QWidget *parent) : QWidget(parent)
 {
-	QPushButton *quit = new QPushButton("QUIT");
-	connect(quit, SIGNAL(clicked()), qApp, SLOT(quit()));
 	setPalette(QPalette(QColor("#2f2f2f")));
 	resize(1200, 1000);
 	move(QApplication::desktop()->geometry().center() - rect().center());
 	map = new Map();
+	quit = new QPushButton("QUIT");
+	connect(quit, &QPushButton::clicked, qApp, &QApplication::quit);
+	points = new QLabel;
+	connect(map->player, &Pacman::pointsChanged, this, &Game::updatePoints);
+	points->setText("Points: 0");
 	QGridLayout	*grid = new QGridLayout;
-	grid->addWidget(map, 0, 0, 1, 1);
-	grid->addWidget(quit, 0, 2);
+	grid->addWidget(map, 1, 1, 2, 2);
+	grid->addWidget(points, 1, 3);
+	grid->addWidget(quit, 2, 3);
 	setLayout(grid);
 }
 

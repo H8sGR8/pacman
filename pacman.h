@@ -5,6 +5,8 @@
 
 class Pacman : public Sprite{
 
+    Q_OBJECT
+
     protected:
         virtual void paintEvent(QPaintEvent*);
         virtual void increasePoints(int);
