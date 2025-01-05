@@ -57,14 +57,16 @@ SOURCES       = game.cpp \
 		map.cpp \
 		pacman.cpp \
 		sprite.cpp \
-		points.cpp moc_pacman.cpp
+		points.cpp moc_pacman.cpp \
+		moc_points.cpp
 OBJECTS       = game.o \
 		ghosts.o \
 		map.o \
 		pacman.o \
 		sprite.o \
 		points.o \
-		moc_pacman.o
+		moc_pacman.o \
+		moc_points.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -363,15 +365,20 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -W -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_pacman.cpp
+compiler_moc_header_make_all: moc_pacman.cpp moc_points.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_pacman.cpp
+	-$(DEL_FILE) moc_pacman.cpp moc_points.cpp
 moc_pacman.cpp: pacman.h \
 		sprite.h \
 		points.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/mati/Desktop/pacman/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/mati/Desktop/pacman -I/home/mati/Desktop/pacman -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include pacman.h -o moc_pacman.cpp
+
+moc_points.cpp: points.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/mati/Desktop/pacman/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/mati/Desktop/pacman -I/home/mati/Desktop/pacman -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include points.h -o moc_points.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -396,13 +403,16 @@ game.o: game.cpp map.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game.o game.cpp
 
 ghosts.o: ghosts.cpp ghosts.h \
-		sprite.h
+		sprite.h \
+		pacman.h \
+		points.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ghosts.o ghosts.cpp
 
 map.o: map.cpp map.h \
 		pacman.h \
 		sprite.h \
-		points.h
+		points.h \
+		ghosts.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o map.o map.cpp
 
 pacman.o: pacman.cpp pacman.h \
@@ -418,6 +428,9 @@ points.o: points.cpp points.h
 
 moc_pacman.o: moc_pacman.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_pacman.o moc_pacman.cpp
+
+moc_points.o: moc_points.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_points.o moc_points.cpp
 
 ####### Install
 

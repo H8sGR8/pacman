@@ -14,9 +14,10 @@ class Pacman : public Sprite{
         void moveSprite();
     signals:
         void pointsChanged(int);
+        void attackGhosts();
     public:
         int points;
         Point* pointsMap[31][28];
         void keyPressEvent(QKeyEvent*);
-        Pacman(pair<int, int>, QWidget* parent = 0);
+        Pacman(pair<int, int>, QWidget* parent = nullptr);
 };

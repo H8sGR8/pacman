@@ -12,15 +12,21 @@ class Point  : public QWidget{
         virtual int getPoints();
     public:
         virtual int getEaten();
-        Point(QWidget *parent = 0);
+        Point(QWidget *parent = nullptr);
 };
 
 class SmallPoint : public Point{
     public:
-        SmallPoint(QWidget *parent = 0);
+        SmallPoint(QWidget *parent = nullptr);
 };
 
 class BigPoint : public Point{
+
+    Q_OBJECT
+
+    signals:
+        void eaten();
     public:
-        BigPoint(QWidget *parent = 0);
+        virtual int getEaten();
+        BigPoint(QWidget *parent = nullptr);
 };

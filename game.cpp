@@ -1,14 +1,13 @@
+#include "map.h"
+#include "pacman.h"
+
 #include <QApplication>
 #include <QGridLayout>
 #include <QPushButton>
 #include <QDesktopWidget>
 #include <QPalette>
 #include <QLabel>
-#include <QDebug>
 #include <string>
-
-#include "map.h"
-#include "pacman.h"
 
 class Game : public QWidget{
 
@@ -18,11 +17,10 @@ class Game : public QWidget{
 		void updatePoints(int);
 	public:
 		Map *map;
-		Game(QWidget *parent = 0);
+		Game(QWidget *parent = nullptr);
 };
 
 void Game::updatePoints(int newPoints){
-	qDebug() << newPoints;
 	points->setText(QString::fromStdString("Points: " + to_string(newPoints)));
 }
 

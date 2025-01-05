@@ -26,6 +26,11 @@ BigPoint::BigPoint(QWidget *parent): Point(parent){
     pointValue = 50;
 }
 
+int BigPoint::getEaten(){
+    emit eaten();
+    return Point::getEaten();
+}
+
 SmallPoint::SmallPoint(QWidget *parent): Point(parent){
     color = QColor("#777722");
     diameter = 10;

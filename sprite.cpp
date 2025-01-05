@@ -3,14 +3,19 @@
 #include <QDebug>
 
 Sprite::Sprite(pair<int, int> startingPoint, QWidget* parent) : QWidget(parent){
-    this->startingPoint = startingPoint;
+    cords.y = startingPoint.first;
+    cords.x = startingPoint.second;
+    currentDirection = NO_DIR;
+    nextDirection = NO_DIR;
+    start = true;
+    step = STEP;
     map.open("map.txt");
     string row;
     for(int i = 0; i < 93; i++){
         getline(map, row);
         if((i - 1)%3 != 0) continue;
         for (int j = 1; j < 83; j+=3){
-            if(row[j] == '#') simpleMap[(i - 1) / 3][(j - 1) / 3] = 1;
+            if(row[j] == '#' || row[j] == '^') simpleMap[(i - 1) / 3][(j - 1) / 3] = 1;
             else simpleMap[(i - 1) / 3][(j - 1) / 3] = 0;
         }
     }
@@ -19,10 +24,10 @@ Sprite::Sprite(pair<int, int> startingPoint, QWidget* parent) : QWidget(parent){
 void Sprite::paintEvent(QPaintEvent* /*evenet*/){}
 
 void Sprite::setStartPos(int y, int x){
-    cords.x = x;
     cords.y = y;
-    move(cords.x * 30, cords.y * 30);
-    previousPosition.x = pos().x();
+    cords.x = x; 
+    move(cords.x * 30 - 15, cords.y * 30);
+    previousPosition.x = pos().x() + 15;
     previousPosition.y = pos().y();
     start = false;
 }
@@ -98,10 +103,25 @@ void Sprite::changeDirection(){
     }
 }
 
+void Sprite::teleport(){
+    if(cords.x == 0 && currentDirection == LEFT){
+        cords.x = 27;
+        move(cords.x * 30, cords.y * 30);
+        previousPosition.x = pos().x();
+        previousPosition.y = pos().y();
+    }
+    else if(cords.x == 27 && currentDirection == RIGHT){
+        cords.x = 0;
+        move(cords.x * 30, cords.y * 30);
+        previousPosition.x = pos().x();
+        previousPosition.y = pos().y();
+    }
+}
+
 void Sprite::moveSprite(){
-    if(start) setStartPos(startingPoint.first, startingPoint.second);
+    if(start) setStartPos(cords.y, cords.x);
     makeStep();
     changeCords();
-    //tp case
+    teleport();
     changeDirection();
 }

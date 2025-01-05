@@ -16,18 +16,22 @@ class Map : public QWidget{
                 QColor color;
                 virtual void paintEvent(QPaintEvent*);
             public:
-                Block(QWidget *parent = 0);
+                Block(QWidget *parent = nullptr);
         };
         class Wall : public Block{
             public:
-                Wall(QWidget *parent = 0);
+                Wall(QWidget *parent = nullptr);
         };
         class Path : public Block{
             public:
-                Path(QWidget *parent = 0);
+                Path(QWidget *parent = nullptr);
+        };
+        class Blockade : public Block{
+            public:
+                Blockade(QWidget *parent = nullptr);
         };
     public:
         QTimer *gameTimer;
         Pacman *player;
-        Map(QWidget *parent = 0);
+        Map(QWidget *parent = nullptr);
 };

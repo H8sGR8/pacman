@@ -22,10 +22,10 @@ class Sprite : public QWidget{
         } position;
         position cords;
         position previousPosition;
-        int currentDirection = NO_DIR;
-        int nextDirection = NO_DIR; 
+        int currentDirection;
+        int nextDirection; 
         QColor color;
-        bool start = true;
+        bool start;
         pair<int, int> startingPoint;
         int step;
         virtual void paintEvent(QPaintEvent* /*event*/);
@@ -34,8 +34,9 @@ class Sprite : public QWidget{
         virtual void makeStep();
         virtual void changeCords();
         virtual void changeDirection();
+        virtual void teleport();
     public slots:
         void moveSprite();
     public:
-        Sprite(pair<int, int>, QWidget* parent = 0);
+        Sprite(pair<int, int>, QWidget* parent = nullptr);
 };
