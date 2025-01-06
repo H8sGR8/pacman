@@ -6,6 +6,7 @@
 Pacman::Pacman(pair<int, int> startingPoint, QWidget* parent) : Sprite(startingPoint, parent){
     color = QColor("#ffff00");
     points = 0;
+    health = 3;
     for(int i = 0; i < 31; i++) for(int j = 0; j < 28; j++) pointsMap[i][j] = NULL;
 }
 
@@ -13,7 +14,7 @@ void Pacman::paintEvent(QPaintEvent* /*event*/){
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(color));
-    painter.drawPie(QRect(0,0,40,40),0,360*16);
+    painter.drawPie(QRect(0,0,40,40), 0, 360 * 16);
 }
 
 void Pacman::keyPressEvent(QKeyEvent *event){
@@ -42,6 +43,14 @@ void Pacman::keyPressEvent(QKeyEvent *event){
 void Pacman::increasePoints(int additionalPoints){
     points += additionalPoints;
     emit pointsChanged(points);
+}
+
+void Pacman::decreaseHealth(){
+    health--;
+    emit healthChanged(health);
+    setStartPos(17, 14);
+    currentDirection = NO_DIR;
+    nextDirection = NO_DIR;
 }
 
 void Pacman::moveSprite(){

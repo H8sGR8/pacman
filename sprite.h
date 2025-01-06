@@ -7,8 +7,8 @@ using namespace std;
 #define NO_DIR 0
 #define UP 1
 #define LEFT 2
-#define RIGHT 3
-#define DOWN 4
+#define DOWN 3
+#define RIGHT 4
 
 #define STEP 5
 
@@ -20,16 +20,13 @@ class Sprite : public QWidget{
             int x;
             int y;
         } position;
-        position cords;
         position previousPosition;
-        int currentDirection;
         int nextDirection; 
         QColor color;
         bool start;
         pair<int, int> startingPoint;
         int step;
         virtual void paintEvent(QPaintEvent* /*event*/);
-        virtual void setStartPos(int, int);
         virtual void stopSprite();
         virtual void makeStep();
         virtual void changeCords();
@@ -38,5 +35,8 @@ class Sprite : public QWidget{
     public slots:
         void moveSprite();
     public:
+        position cords;
+        int currentDirection;
+        virtual void setStartPos(int, int);
         Sprite(pair<int, int>, QWidget* parent = nullptr);
 };

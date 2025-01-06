@@ -8,16 +8,19 @@ class Pacman : public Sprite{
     Q_OBJECT
 
     protected:
+        int points;
+        int health;
         virtual void paintEvent(QPaintEvent*);
-        virtual void increasePoints(int);
+        void keyPressEvent(QKeyEvent*);
     public slots:
         void moveSprite();
     signals:
         void pointsChanged(int);
+        void healthChanged(int);
         void attackGhosts();
     public:
-        int points;
         Point* pointsMap[31][28];
-        void keyPressEvent(QKeyEvent*);
+        virtual void decreaseHealth();
+        virtual void increasePoints(int);
         Pacman(pair<int, int>, QWidget* parent = nullptr);
 };

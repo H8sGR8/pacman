@@ -3,7 +3,6 @@
 #include "pacman.h"
 
 #include <QTimer>
-#include <QWidget>
 using namespace std;
 
 class Map : public QWidget{

@@ -32,8 +32,8 @@ Map::Blockade::Blockade(QWidget *parent) : Block(parent){
 }
 
 Map::Map(QWidget *parent) : QWidget(parent){
-    setMinimumSize(850, 940);
-    setMaximumSize(850, 940);
+    setMinimumSize(853, 943);
+    setMaximumSize(853, 943);
     mapFile.open("map.txt");
     string row;
     vector<pair<int, int>> cordsBigPoint;
