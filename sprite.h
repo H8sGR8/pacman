@@ -24,8 +24,8 @@ class Sprite : public QWidget{
         int nextDirection; 
         QColor color;
         bool start;
-        pair<int, int> startingPoint;
         int step;
+        bool play;
         virtual void paintEvent(QPaintEvent* /*event*/);
         virtual void stopSprite();
         virtual void makeStep();

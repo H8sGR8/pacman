@@ -18,6 +18,10 @@ void Pacman::paintEvent(QPaintEvent* /*event*/){
 }
 
 void Pacman::keyPressEvent(QKeyEvent *event){
+    if(event->key() && !play){
+        emit startPlaying();
+        play = true;
+    }
     if(event->key() == Qt::Key_Up){
         if(currentDirection == NO_DIR) currentDirection = UP;
         if(currentDirection == DOWN) nextDirection = NO_DIR;

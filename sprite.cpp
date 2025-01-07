@@ -9,6 +9,7 @@ Sprite::Sprite(pair<int, int> startingPoint, QWidget* parent) : QWidget(parent){
     nextDirection = NO_DIR;
     start = true;
     step = STEP;
+    play = false;
     map.open("map.txt");
     string row;
     for(int i = 0; i < 93; i++){

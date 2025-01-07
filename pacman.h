@@ -15,6 +15,7 @@ class Pacman : public Sprite{
     public slots:
         void moveSprite();
     signals:
+        void startPlaying();
         void pointsChanged(int);
         void healthChanged(int);
         void attackGhosts();
