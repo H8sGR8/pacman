@@ -119,6 +119,18 @@ void Sprite::teleport(){
     }
 }
 
+int Sprite::getYOfNTileInFront(int direction, int n){
+    return cords.y + ((direction == UP)? -n : ((direction == DOWN)? n : 0));
+}
+
+int Sprite::getXOfNTileInFront(int direction, int n){
+    return cords.x + ((direction == LEFT)? -n : ((direction == RIGHT)? n : 0));
+}
+
+int Sprite::getTileInFront(int direction){
+    return simpleMap[getYOfNTileInFront(direction, 1)][getXOfNTileInFront(direction, 1)];
+}
+
 void Sprite::moveSprite(){
     if(start) setStartPos(cords.y, cords.x);
     makeStep();

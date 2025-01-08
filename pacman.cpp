@@ -6,6 +6,8 @@
 Pacman::Pacman(pair<int, int> startingPoint, QWidget* parent) : Sprite(startingPoint, parent){
     color = QColor("#ffff00");
     points = 0;
+    pointsColected = 0;
+    bigPointsColected = 0;
     health = 3;
     for(int i = 0; i < 31; i++) for(int j = 0; j < 28; j++) pointsMap[i][j] = NULL;
 }
@@ -57,9 +59,15 @@ void Pacman::decreaseHealth(){
     nextDirection = NO_DIR;
 }
 
+void Pacman::increaseBigPointsColected(){
+    bigPointsColected++;
+    emit attackGhosts();
+}
+
 void Pacman::moveSprite(){
     Sprite::moveSprite();
     if(pointsMap[cords.y][cords.x] != NULL){
+        pointsColected++;
         increasePoints(pointsMap[cords.y][cords.x]->getEaten());
         pointsMap[cords.y][cords.x] = NULL;
     }

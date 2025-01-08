@@ -44,10 +44,10 @@ Map::Map(QWidget *parent) : QWidget(parent){
     Orange *clyde = new Orange({14, 16}, player);
     connect(player, &Pacman::attackGhosts, clyde, &Orange::getVunerable);
     connect(player, &Pacman::startPlaying, clyde, &Ghost::startPlaying);
-    Cyan *inky = new Cyan({14, 14}, player);
+    Cyan *inky = new Cyan({14, 12}, player, blinky);
     connect(player, &Pacman::attackGhosts, inky, &Cyan::getVunerable);
     connect(player, &Pacman::startPlaying, inky, &Ghost::startPlaying);
-    Pink *pinky = new Pink({14, 12}, player);
+    Pink *pinky = new Pink({14, 14}, player);
     connect(player, &Pacman::attackGhosts, pinky, &Pink::getVunerable);
     connect(player, &Pacman::startPlaying, pinky, &Ghost::startPlaying);
     QGridLayout *grid = new QGridLayout;
@@ -69,7 +69,7 @@ Map::Map(QWidget *parent) : QWidget(parent){
     }
     for(unsigned int i = 0; i < cordsBigPoint.size(); i++){
         BigPoint *bp = new BigPoint;
-        connect(bp, &BigPoint::eaten, player, &Pacman::attackGhosts);
+        connect(bp, &BigPoint::eaten, player, &Pacman::increaseBigPointsColected);
         player->pointsMap[(cordsBigPoint.at(i).first - 1) / 3][(cordsBigPoint.at(i).second - 1) / 3] = bp;
         grid->addWidget(bp, 
         cordsBigPoint.at(i).first - 1, cordsBigPoint.at(i).second - 1, cordsBigPoint.at(i).first + 1, cordsBigPoint.at(i).second + 1);

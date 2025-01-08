@@ -32,11 +32,14 @@ class Sprite : public QWidget{
         virtual void changeCords();
         virtual void changeDirection();
         virtual void teleport();
+        virtual int getTileInFront(int);
     public slots:
         void moveSprite();
     public:
         position cords;
         int currentDirection;
+        virtual int getXOfNTileInFront(int, int);
+        virtual int getYOfNTileInFront(int, int);
         virtual void setStartPos(int, int);
         Sprite(pair<int, int>, QWidget* parent = nullptr);
 };
