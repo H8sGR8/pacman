@@ -53,18 +53,20 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = game.cpp \
-		ghosts.cpp \
+		ghost.cpp \
 		map.cpp \
 		pacman.cpp \
 		sprite.cpp \
-		points.cpp moc_pacman.cpp \
+		points.cpp \
+		ghostTypes.cpp moc_pacman.cpp \
 		moc_points.cpp
 OBJECTS       = game.o \
-		ghosts.o \
+		ghost.o \
 		map.o \
 		pacman.o \
 		sprite.o \
 		points.o \
+		ghostTypes.o \
 		moc_pacman.o \
 		moc_points.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -142,16 +144,18 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		pacman.pro ghosts.h \
+		pacman.pro ghost.h \
 		map.h \
 		pacman.h \
 		sprite.h \
-		points.h game.cpp \
-		ghosts.cpp \
+		points.h \
+		ghostTypes.h game.cpp \
+		ghost.cpp \
 		map.cpp \
 		pacman.cpp \
 		sprite.cpp \
-		points.cpp
+		points.cpp \
+		ghostTypes.cpp
 QMAKE_TARGET  = pacman
 DESTDIR       = 
 TARGET        = pacman
@@ -331,8 +335,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ghosts.h map.h pacman.h sprite.h points.h $(DISTDIR)/
-	$(COPY_FILE) --parents game.cpp ghosts.cpp map.cpp pacman.cpp sprite.cpp points.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ghost.h map.h pacman.h sprite.h points.h ghostTypes.h $(DISTDIR)/
+	$(COPY_FILE) --parents game.cpp ghost.cpp map.cpp pacman.cpp sprite.cpp points.cpp ghostTypes.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -402,17 +406,18 @@ game.o: game.cpp map.h \
 		points.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game.o game.cpp
 
-ghosts.o: ghosts.cpp ghosts.h \
+ghost.o: ghost.cpp ghost.h \
 		sprite.h \
 		pacman.h \
 		points.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ghosts.o ghosts.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ghost.o ghost.cpp
 
 map.o: map.cpp map.h \
 		pacman.h \
 		sprite.h \
 		points.h \
-		ghosts.h
+		ghostTypes.h \
+		ghost.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o map.o map.cpp
 
 pacman.o: pacman.cpp pacman.h \
@@ -425,6 +430,13 @@ sprite.o: sprite.cpp sprite.h
 
 points.o: points.cpp points.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o points.o points.cpp
+
+ghostTypes.o: ghostTypes.cpp ghostTypes.h \
+		ghost.h \
+		sprite.h \
+		pacman.h \
+		points.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ghostTypes.o ghostTypes.cpp
 
 moc_pacman.o: moc_pacman.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_pacman.o moc_pacman.cpp

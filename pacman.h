@@ -11,12 +11,17 @@ class Pacman : public Sprite{
         int points;
         int health;
         virtual void paintEvent(QPaintEvent*);
-        void keyPressEvent(QKeyEvent*);
+        virtual void keyPressEvent(QKeyEvent*);
+        virtual void goToNextLevel();
+        virtual void eatPoint();
+        virtual void loseGame();
     public slots:
-        void moveSprite();
-        void increaseBigPointsColected();
+        virtual void moveSprite();
+        virtual void increaseBigPointsColected();
     signals:
+        void endGame();
         void startPlaying();
+        void restartPosition();
         void pointsChanged(int);
         void healthChanged(int);
         void attackGhosts();

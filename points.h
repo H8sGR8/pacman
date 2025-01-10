@@ -11,6 +11,7 @@ class Point  : public QWidget{
         virtual void paintEvent(QPaintEvent*);
         virtual int getPoints();
     public:
+        bool colected;
         virtual int getEaten();
         Point(QWidget *parent = nullptr);
 };

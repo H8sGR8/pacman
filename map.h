@@ -29,6 +29,8 @@ class Map : public QWidget{
             public:
                 Blockade(QWidget *parent = nullptr);
         };
+    public slots:
+        void endGame();
     public:
         QTimer *gameTimer;
         Pacman *player;

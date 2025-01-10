@@ -54,9 +54,11 @@ void Pacman::increasePoints(int additionalPoints){
 void Pacman::decreaseHealth(){
     health--;
     emit healthChanged(health);
+    emit restartPosition();
     setStartPos(17, 14);
     currentDirection = NO_DIR;
     nextDirection = NO_DIR;
+    play = false;
 }
 
 void Pacman::increaseBigPointsColected(){
@@ -64,11 +66,35 @@ void Pacman::increaseBigPointsColected(){
     emit attackGhosts();
 }
 
-void Pacman::moveSprite(){
-    Sprite::moveSprite();
-    if(pointsMap[cords.y][cords.x] != NULL){
+void Pacman::eatPoint(){
+    if(pointsMap[cords.y][cords.x] != NULL && !pointsMap[cords.y][cords.x]->colected){
         pointsColected++;
         increasePoints(pointsMap[cords.y][cords.x]->getEaten());
-        pointsMap[cords.y][cords.x] = NULL;
+        pointsMap[cords.y][cords.x]->colected = true;
     }
+}
+
+void Pacman::goToNextLevel(){
+    for(int i = 0; i < 31; i++) for(int j = 0; j < 28; j++) if(pointsMap[i][j] != NULL){
+        pointsMap[i][j]->colected = false;
+        pointsMap[i][j]->setUpdatesEnabled(true);
+    }
+    emit restartPosition();
+    setStartPos(17, 14);
+    currentDirection = NO_DIR;
+    nextDirection = NO_DIR;
+    play = false;
+    pointsColected = 0;
+    bigPointsColected = 0;
+}
+
+void Pacman::loseGame(){
+    if(health == 0) emit endGame();
+}
+
+void Pacman::moveSprite(){
+    Sprite::moveSprite();
+    eatPoint();
+    if(pointsColected == 246) goToNextLevel();
+    loseGame();
 }

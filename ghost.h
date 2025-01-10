@@ -16,9 +16,9 @@
 #define CROSSROAD 2
 
 #define BLINKY_WAITING_TIME 0
-#define PINKY_WAITING_TIME 5
-#define INKY_WAITING_TIME 10
-#define CLYDE_WAITING_TIME 15
+#define PINKY_WAITING_TIME 3
+#define INKY_WAITING_TIME 6
+#define CLYDE_WAITING_TIME 9
 
 #define BLINKY_INKY_SCOUT_TARGET_X 25
 #define BLINKY_PINKY_SCOUT_TARGEY_Y 0
@@ -36,6 +36,7 @@ class Ghost : public Sprite{
         position target;
         bool active;
         int waitingTime;
+        bool posToGoToJail;
         virtual void paintEvent(QPaintEvent*);
         virtual void colideWithPlayer();
         virtual void beFrightened();
@@ -45,57 +46,19 @@ class Ghost : public Sprite{
         virtual void turnWhenNoOption();
         virtual void choosePath();
         virtual void waitToGetFree(bool);
+        virtual void scout();
         virtual void hase(int, int);
         virtual void changeToHase();
-        virtual void changeToScout(int, int);
+        virtual void changeToScout();
         virtual int calculateHaseTargetX();
         virtual int calculateHaseTargetY();
+        virtual void goToJail();
     public slots:
         virtual void startPlaying();
+        virtual void restartPosition();
         virtual void getVunerable(); 
         virtual void moveSprite();
     public:
         Ghost(pair<int, int>, Pacman*, QWidget*parent = nullptr);
 
-};
-
-class Pink : public Ghost{
-    protected:
-        virtual int calculateHaseTargetX();
-        virtual int calculateHaseTargetY();
-    public slots:
-        virtual void moveSprite();
-    public:
-        Pink(pair<int, int>, Pacman*, QWidget*parent = nullptr);
-};
-
-class Orange : public Ghost{
-    protected:
-        virtual int calculateHaseTargetX();
-        virtual int calculateHaseTargetY();
-    public slots:
-        virtual void moveSprite();
-    public:
-        Orange(pair<int, int>, Pacman*, QWidget*parent = nullptr);
-};
-
-class Red : public Ghost{
-    protected:
-        virtual int calculateHaseTargetX();
-        virtual int calculateHaseTargetY();
-    public slots:
-        virtual void moveSprite();
-    public:
-        Red(pair<int, int>, Pacman*, QWidget*parent = nullptr);
-};
-
-class Cyan : public Ghost{
-    protected:
-        Red *blinky;
-        virtual int calculateHaseTargetX();
-        virtual int calculateHaseTargetY();
-    public slots:
-        virtual void moveSprite();
-    public:
-        Cyan(pair<int, int>, Pacman*, Red*, QWidget*parent = nullptr);
 };

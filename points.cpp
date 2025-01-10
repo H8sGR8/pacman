@@ -2,7 +2,9 @@
 
 #include <QPainter>
 
-Point::Point(QWidget *parent): QWidget(parent){}
+Point::Point(QWidget *parent): QWidget(parent){
+    colected = false;
+}
 
 void Point::paintEvent(QPaintEvent* /*event*/){
     QPainter painter(this);

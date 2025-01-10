@@ -14,7 +14,10 @@ class Game : public QWidget{
 	private:
 		QPushButton *quit;
 		QLabel *points;
+		QLabel *health;
+		QLabel *gameOver;
 		void updatePoints(int);
+		void updateHealth(int);
 	public:
 		Map *map;
 		Game(QWidget *parent = nullptr);
@@ -22,6 +25,11 @@ class Game : public QWidget{
 
 void Game::updatePoints(int newPoints){
 	points->setText(QString::fromStdString("Points: " + to_string(newPoints)));
+}
+
+void Game::updateHealth(int newHealth){
+	health->setText(QString::fromStdString("Health: " + to_string(newHealth)));
+	if(newHealth == 0) gameOver->setVisible(true);
 }
 
 Game::Game(QWidget *parent) : QWidget(parent)
@@ -34,12 +42,21 @@ Game::Game(QWidget *parent) : QWidget(parent)
 	connect(quit, &QPushButton::clicked, qApp, &QApplication::quit);
 	points = new QLabel;
 	connect(map->player, &Pacman::pointsChanged, this, &Game::updatePoints);
+	health = new QLabel;
+	connect(map->player, &Pacman::healthChanged, this, &Game::updateHealth);
+	gameOver = new QLabel;
 	points->setText("Points: 0");
+	health->setText("Health: 3");
+	gameOver->setText("Game Over :(");
 	QGridLayout	*grid = new QGridLayout;
-	grid->addWidget(map, 1, 1, 2, 2);
-	grid->addWidget(points, 1, 3);
-	grid->addWidget(quit, 2, 3);
+	grid->addWidget(map, 1, 1, 10, 3);
+	grid->addWidget(points, 1, 4);
+	grid->addWidget(health, 2, 4);
+	grid->addWidget(quit, 5, 4);
+	grid->addWidget(gameOver, 5, 2);
 	setLayout(grid);
+	gameOver->setVisible(false);
+	gameOver->setStyleSheet("font: 40pt; color: red;");
 }
 
 int main(int argc, char *argv[])

@@ -1,7 +1,8 @@
-#include "ghosts.h"
+#include "ghost.h"
 
 #include <QPainter>
 #include <cmath>
+#include <QDebug>
 
 Ghost::Ghost(pair<int, int> startingPoint, Pacman *player, QWidget* parent) : Sprite(startingPoint, parent){
     stage = SCOUT;
@@ -9,6 +10,7 @@ Ghost::Ghost(pair<int, int> startingPoint, Pacman *player, QWidget* parent) : Sp
     this->player = player;
     active = false;
     waitingTime = 0;
+    posToGoToJail = false;
     for(int i = 1; i < 30; i++) for(int j = 1; j < 27; j++) if(
         (simpleMap[i + 1][j] == 0 && simpleMap[i][j + 1] == 0 && simpleMap[i][j - 1] == 0) ||
         (simpleMap[i + 1][j] == 0 && simpleMap[i][j + 1] == 0 && simpleMap[i - 1][j] == 0) ||
@@ -33,7 +35,7 @@ void Ghost::paintEvent(QPaintEvent* /*event*/){
 
 void Ghost::addPathOption(vector<pair<int, double>> &pathOptions, int pathDirection){
     position option;
-    if(getTileInFront(pathDirection) == PATH){
+    if(getTileInFront(pathDirection) == PATH || getTileInFront(pathDirection) == CROSSROAD){
         option.y = getYOfNTileInFront(pathDirection, 1);
         option.x = getXOfNTileInFront(pathDirection, 1);
         pathOptions.push_back({pathDirection, sqrt(pow(target.x - option.x, 2) + pow(target.y - option.y, 2))});
@@ -42,6 +44,12 @@ void Ghost::addPathOption(vector<pair<int, double>> &pathOptions, int pathDirect
 
 void Ghost::getPathOptions(vector<pair<int, double>> &pathOptions){
     switch(currentDirection){
+        case(NO_DIR):
+            addPathOption(pathOptions, LEFT);
+            addPathOption(pathOptions, UP);
+            addPathOption(pathOptions, RIGHT);
+            addPathOption(pathOptions, DOWN);
+            break;
         case(UP):
             addPathOption(pathOptions, LEFT);
             addPathOption(pathOptions, UP);
@@ -67,13 +75,14 @@ void Ghost::getPathOptions(vector<pair<int, double>> &pathOptions){
 
 void Ghost::comparePaths(vector<pair<int, double>> &pathOptions){
     double minDistance = INFINITY;
-        for(unsigned int i = 0; i < pathOptions.size(); i++){
-            if(pathOptions.at(i).second < minDistance){
-                nextDirection = pathOptions.at(i).first;
-                minDistance = pathOptions.at(i).second;
-                }
-            else if(pathOptions.at(i).second == minDistance && pathOptions.at(i).first < nextDirection) nextDirection = pathOptions.at(i).first;
+    nextDirection = RIGHT;
+    for(unsigned int i = 0; i < pathOptions.size(); i++){
+        if(pathOptions.at(i).second < minDistance){
+            nextDirection = pathOptions.at(i).first;
+            minDistance = pathOptions.at(i).second;
         }
+        else if(pathOptions.at(i).second == minDistance && pathOptions.at(i).first < nextDirection) nextDirection = pathOptions.at(i).first;
+    }
 }
 
 void Ghost::turnWhenNoOption(){
@@ -119,8 +128,24 @@ void Ghost::beFrightened(){
 }
 
 void Ghost::colideWithPlayer(){
-    if(abs(pos().x() - player->pos().x()) <= 10 && abs(pos().y() - player->pos().y()) <= 10){
-        if(stage == FRIGHTENED) player->increasePoints(200);
+    if(play && abs(pos().x() - player->pos().x()) <= 10 && abs(pos().y() - player->pos().y()) <= 10){
+        if(stage == FRIGHTENED){
+            player->increasePoints(200);
+            play = false;
+            target.x = 14;
+            target.y = 11;
+            if(abs(pos().y() - previousPosition.y) % 15 != 0 && (currentDirection == DOWN || currentDirection == UP))
+                move(cords.x * 30, previousPosition.y - 15);
+            if(abs(pos().x() - previousPosition.x) % 15 != 0 && (currentDirection == LEFT || currentDirection == RIGHT))
+                move(previousPosition.x - 15, cords.y * 30);
+            step *= 3;
+            currentDirection = NO_DIR;
+            color = orginalColor;
+            vector<pair<int, double>> pathOptions;
+            getPathOptions(pathOptions);
+            comparePaths(pathOptions);
+            currentDirection = nextDirection;
+        }
         else player->decreaseHealth();
     }
 }
@@ -136,9 +161,12 @@ void Ghost::waitToGetFree(bool waitWhile){
         else if(pos().y() != 11 * 30) move(pos().x(), pos().y() - step);
         else{
             active = true;
-            currentDirection = nextDirection;
-            nextDirection = NO_DIR;
             setStartPos(11, 14);
+            vector<pair<int, double>> pathOptions;
+            currentDirection = NO_DIR;
+            getPathOptions(pathOptions);
+            comparePaths(pathOptions);
+            currentDirection = nextDirection;
         }
     }
 }
@@ -154,6 +182,8 @@ int Ghost::calculateHaseTargetX(){return 0;}
 
 int Ghost::calculateHaseTargetY(){return 0;}
 
+void Ghost::scout(){}
+
 void Ghost::hase(int targetY, int targetX){
     if(stage == HASE){
         target.x = targetX;
@@ -161,12 +191,29 @@ void Ghost::hase(int targetY, int targetX){
     }
 }
 
-void Ghost::changeToScout(int targetY, int targetX){
+void Ghost::changeToScout(){
     if(stage == HASE && framesInStage == 20 * FRAMES_PER_SECOND){
         stage = SCOUT;
         framesInStage = 0;
-        target.x = targetX;
-        target.y = targetY;
+        scout();
+    }
+}
+
+void Ghost::goToJail(){
+    if(pos().y() == 11 * 30 && pos().x() == 14 * 30 - 15){
+        currentDirection = NO_DIR;
+        nextDirection = NO_DIR;
+        posToGoToJail = true;
+    }
+    if(posToGoToJail){
+        if(pos().y() < 14 * 30) move(pos().x(), pos().y() + step);
+        else{
+            play = true;
+            active = false;
+            posToGoToJail = false;
+            step = STEP;
+            scout();
+        }
     }
 }
 
@@ -181,9 +228,23 @@ void Ghost::moveSprite(){
         changeDirection();
         beFrightened();
         colideWithPlayer();
+        if(play){
+            changeToHase();
+            hase(calculateHaseTargetY(), calculateHaseTargetX());
+        }
+        else goToJail();
     }
-    changeToHase();
-    hase(calculateHaseTargetY(), calculateHaseTargetX());
+}
+
+void Ghost::restartPosition(){
+    color = orginalColor;
+    play = false;
+    active = false;
+    currentDirection = NO_DIR;
+    stage = SCOUT;
+    step = STEP;
+    framesInStage = 0;
+    waitingTime = 0;
 }
 
 void Ghost::getVunerable(){
@@ -199,93 +260,4 @@ void Ghost::getVunerable(){
 
 void Ghost::startPlaying(){
     play = true;
-}
-
-Pink::Pink(pair<int, int> startingPoint, Pacman *player, QWidget* parent) : Ghost(startingPoint, player, parent){
-    color = QColor("#ff6688");
-    orginalColor = color;
-    nextDirection = LEFT;
-    target.x = PINKY_CLYDE_SCOUT_TARGET_X;
-    target.y = BLINKY_PINKY_SCOUT_TARGEY_Y;
-}
-
-int Pink::calculateHaseTargetX(){
-    return player->getXOfNTileInFront(player->currentDirection, 4);
-}
-
-int Pink::calculateHaseTargetY(){
-    return player->getYOfNTileInFront(player->currentDirection, 4);
-}
-
-void Pink::moveSprite(){
-    Ghost::moveSprite();
-    changeToScout(BLINKY_PINKY_SCOUT_TARGEY_Y, PINKY_CLYDE_SCOUT_TARGET_X);
-    if(play && !active)waitToGetFree(waitingTime < PINKY_WAITING_TIME * FRAMES_PER_SECOND);
-}
-
-Orange::Orange(pair<int, int> startingPoint, Pacman *player, QWidget* parent) : Ghost(startingPoint, player, parent){
-    color = QColor("#ff8800");
-    orginalColor = color;
-    nextDirection = LEFT;
-    target.x = PINKY_CLYDE_SCOUT_TARGET_X;
-    target.y = INKY_CLYDE_SCOUT_TARGEY_Y;
-}
-
-int Orange::calculateHaseTargetX(){
-    return (sqrt(pow(player->cords.x, 2) + pow(cords.x, 2)) < 8)? PINKY_CLYDE_SCOUT_TARGET_X : player->cords.x;
-}
-
-int Orange::calculateHaseTargetY(){
-    return (sqrt(pow(player->cords.y, 2) + pow(cords.y, 2)) < 8)? INKY_CLYDE_SCOUT_TARGEY_Y : player->cords.y;
-}
-
-void Orange::moveSprite(){
-    Ghost::moveSprite();
-    changeToScout(INKY_CLYDE_SCOUT_TARGEY_Y, PINKY_CLYDE_SCOUT_TARGET_X);
-    if(play && !active)waitToGetFree(player->bigPointsColected < 3);
-}
-
-Cyan::Cyan(pair<int, int> startingPoint, Pacman *player, Red *blinky, QWidget* parent) : Ghost(startingPoint, player, parent){
-    color = QColor("#00ffff");
-    orginalColor = color;
-    this->blinky = blinky;
-    nextDirection = RIGHT;
-    target.x = BLINKY_INKY_SCOUT_TARGET_X;
-    target.y = INKY_CLYDE_SCOUT_TARGEY_Y;
-}
-
-int Cyan::calculateHaseTargetX(){
-    return 2 * player->getXOfNTileInFront(player->currentDirection, 2) - blinky->cords.x;
-}
-
-int Cyan::calculateHaseTargetY(){
-    return 2 * player->getYOfNTileInFront(player->currentDirection, 2) - blinky->cords.y;
-}
-
-void Cyan::moveSprite(){
-    Ghost::moveSprite();
-    changeToScout(INKY_CLYDE_SCOUT_TARGEY_Y, BLINKY_INKY_SCOUT_TARGET_X);
-    if(play && !active)waitToGetFree(player->pointsColected < 30);
-}
-
-Red::Red(pair<int, int> startingPoint, Pacman *player, QWidget* parent) : Ghost(startingPoint, player, parent){
-    color = QColor("#ff0000");
-    orginalColor = color;
-    nextDirection = RIGHT;
-    target.x = BLINKY_INKY_SCOUT_TARGET_X;
-    target.y = BLINKY_PINKY_SCOUT_TARGEY_Y;
-}
-
-int Red::calculateHaseTargetX(){
-    return player->cords.x;
-}
-
-int Red::calculateHaseTargetY(){
-    return player->cords.y;
-}
-
-void Red::moveSprite(){
-    Ghost::moveSprite();
-    changeToScout(BLINKY_PINKY_SCOUT_TARGEY_Y, BLINKY_INKY_SCOUT_TARGET_X);
-    if(play && !active)waitToGetFree(waitingTime < BLINKY_WAITING_TIME * FRAMES_PER_SECOND);
 }

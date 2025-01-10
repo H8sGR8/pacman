@@ -18,6 +18,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 # Input
-HEADERS += ghosts.h map.h pacman.h sprite.h points.h
-SOURCES += game.cpp ghosts.cpp map.cpp pacman.cpp sprite.cpp points.cpp
+HEADERS += ghost.h map.h pacman.h sprite.h points.h ghostTypes.h
+SOURCES += game.cpp ghost.cpp map.cpp pacman.cpp sprite.cpp points.cpp ghostTypes.cpp
 QT += widgets
