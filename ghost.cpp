@@ -1,4 +1,5 @@
 #include "ghost.h"
+#include "defines.h"
 
 #include <QPainter>
 #include <cmath>
@@ -11,26 +12,50 @@ Ghost::Ghost(pair<int, int> startingPoint, Pacman *player, QWidget* parent) : Sp
     active = false;
     waitingTime = 0;
     posToGoToJail = false;
-    for(int i = 1; i < 30; i++) for(int j = 1; j < 27; j++) if(
-        (simpleMap[i + 1][j] == 0 && simpleMap[i][j + 1] == 0 && simpleMap[i][j - 1] == 0) ||
-        (simpleMap[i + 1][j] == 0 && simpleMap[i][j + 1] == 0 && simpleMap[i - 1][j] == 0) ||
-        (simpleMap[i + 1][j] == 0 && simpleMap[i][j - 1] == 0 && simpleMap[i - 1][j] == 0) ||
-        (simpleMap[i - 1][j] == 0 && simpleMap[i][j + 1] == 0 && simpleMap[i][j - 1] == 0)) 
-            simpleMap[i][j] = 2;
+    for(int i = 1; i < SIMPLE_MAP_HEIGHT - 1; i++) for(int j = 1; j < SIMPLE_MAP_WIDHT - 1; j++) if(
+        (simpleMap[i + 1][j] == PATH && simpleMap[i][j + 1] == PATH && simpleMap[i][j - 1] == PATH) ||
+        (simpleMap[i + 1][j] == PATH && simpleMap[i][j + 1] == PATH && simpleMap[i - 1][j] == PATH) ||
+        (simpleMap[i + 1][j] == PATH && simpleMap[i][j - 1] == PATH && simpleMap[i - 1][j] == PATH) ||
+        (simpleMap[i - 1][j] == PATH && simpleMap[i][j + 1] == PATH && simpleMap[i][j - 1] == PATH)) 
+            simpleMap[i][j] = CROSSROAD;
+}
+
+void Ghost::drawEyes(QPainter& painter){
+    painter.setBrush(QColor(BLACK));
+    switch(currentDirection){
+        case(NO_DIR):
+            painter.drawPie(QRect(LEFT_PUPIL_POS_X, LEFT_PUPIL_POS_Y, PUPIL_SIZE, PUPIL_SIZE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+            painter.drawPie(QRect(RIGHT_PUPIL_POS_X, RIGHT_PUPIL_POS_Y, PUPIL_SIZE, PUPIL_SIZE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+            break;
+        case(UP):
+            painter.drawPie(QRect(LEFT_PUPIL_POS_X, LEFT_PUPIL_POS_Y - PUPIL_SHIFT, PUPIL_SIZE, PUPIL_SIZE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+            painter.drawPie(QRect(RIGHT_PUPIL_POS_X, RIGHT_PUPIL_POS_Y - PUPIL_SHIFT, PUPIL_SIZE, PUPIL_SIZE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+            break;
+        case(DOWN):
+            painter.drawPie(QRect(LEFT_PUPIL_POS_X, LEFT_PUPIL_POS_Y + PUPIL_SHIFT, PUPIL_SIZE, PUPIL_SIZE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+            painter.drawPie(QRect(RIGHT_PUPIL_POS_X, RIGHT_PUPIL_POS_Y + PUPIL_SHIFT, PUPIL_SIZE, PUPIL_SIZE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+            break;
+        case(LEFT):
+            painter.drawPie(QRect(LEFT_PUPIL_POS_X - PUPIL_SHIFT, LEFT_PUPIL_POS_Y, PUPIL_SIZE, PUPIL_SIZE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+            painter.drawPie(QRect(RIGHT_PUPIL_POS_X - PUPIL_SHIFT, RIGHT_PUPIL_POS_Y, PUPIL_SIZE, PUPIL_SIZE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+            break;
+        case(RIGHT):
+            painter.drawPie(QRect(LEFT_PUPIL_POS_X + PUPIL_SHIFT, LEFT_PUPIL_POS_Y, PUPIL_SIZE, PUPIL_SIZE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+            painter.drawPie(QRect(RIGHT_PUPIL_POS_X + PUPIL_SHIFT, RIGHT_PUPIL_POS_Y, PUPIL_SIZE, PUPIL_SIZE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+            break;
+    }
 }
 
 void Ghost::paintEvent(QPaintEvent* /*event*/){
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(color));
-    painter.drawPie(QRect(0,0,40,40),0,180*16);
-    painter.drawRect(0, 20, 40, 20);
-    painter.setBrush(QColor("#ffffff"));
-    painter.drawPie(QRect(10,10,8,10),0,360*16);
-    painter.drawPie(QRect(22,10,8,10),0,360*16);
-    painter.setBrush(QColor("#000000"));
-    painter.drawPie(QRect(12,12,5,5),0,360*16);
-    painter.drawPie(QRect(24,12,5,5),0,360*16);
+    painter.drawPie(QRect(0, 0, SPRITE_SIZE, SPRITE_SIZE), 0, HALF_CIRCLE * ANGLE_MULTIPLIER);
+    painter.drawRect(0, SPRITE_SIZE / 2, SPRITE_SIZE, SPRITE_SIZE / 2);
+    painter.setBrush(QColor(WHITE));
+    painter.drawPie(QRect(LEFT_EYE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+    painter.drawPie(QRect(RIGHT_EYE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+    drawEyes(painter);
 }
 
 void Ghost::addPathOption(vector<pair<int, double>> &pathOptions, int pathDirection){
@@ -89,19 +114,11 @@ void Ghost::turnWhenNoOption(){
     if(getTileInFront(currentDirection) == WALL && pos().x() == previousPosition.x && pos().y() == previousPosition.y 
             && simpleMap[cords.y][cords.x] == PATH){
         switch(currentDirection){
-            case(UP):
+            case(UP): case(DOWN):
                 if(simpleMap[cords.y][cords.x - 1] == PATH) nextDirection = LEFT;
                 else nextDirection = RIGHT;
                 break;
-            case(LEFT):
-                if(simpleMap[cords.y - 1][cords.x] == PATH) nextDirection = UP;
-                else nextDirection = DOWN;
-                break;
-            case(DOWN):
-                if(simpleMap[cords.y][cords.x - 1] == PATH) nextDirection = LEFT;
-                else nextDirection = RIGHT;
-                break;
-            case(RIGHT):
+            case(LEFT): case(RIGHT):
                 if(simpleMap[cords.y - 1][cords.x] == PATH) nextDirection = UP;
                 else nextDirection = DOWN;
                 break;
@@ -119,7 +136,7 @@ void Ghost::choosePath(){
 }
 
 void Ghost::beFrightened(){
-    if(stage == FRIGHTENED && framesInStage == 5 * FRAMES_PER_SECOND){
+    if(stage == FRIGHTENED && framesInStage == FRIGHTENED_TIME * FRAMES_PER_SECOND){
         color = orginalColor;
         stage = previousStage;
         framesInStage = framesInPreviousStage;
@@ -127,54 +144,48 @@ void Ghost::beFrightened(){
     }
 }
 
+void Ghost::colideWithPlayerWhileFrightened(){
+    player->increasePoints(GHOST_VALUE);
+    play = false;
+    target.x = OUTSIDE_CAGE_POS_X;
+    target.y = OUTSIDE_CAGE_POS_Y;
+    if(abs(pos().y() - previousPosition.y) % (TILE_SIZE / 2) != 0 && (currentDirection == DOWN || currentDirection == UP))
+        move(cords.x * TILE_SIZE, previousPosition.y - (TILE_SIZE / 2));
+    if(abs(pos().x() - previousPosition.x) % (TILE_SIZE / 2) != 0 && (currentDirection == LEFT || currentDirection == RIGHT))
+        move(previousPosition.x - (TILE_SIZE / 2), cords.y * TILE_SIZE);
+    step *= 3;
+    currentDirection = NO_DIR;
+    color = orginalColor;
+    vector<pair<int, double>> pathOptions;
+    getPathOptions(pathOptions);
+    comparePaths(pathOptions);
+    currentDirection = nextDirection;
+}
+
 void Ghost::colideWithPlayer(){
-    if(play && abs(pos().x() - player->pos().x()) <= 10 && abs(pos().y() - player->pos().y()) <= 10){
-        if(stage == FRIGHTENED){
-            player->increasePoints(200);
-            play = false;
-            target.x = 14;
-            target.y = 11;
-            if(abs(pos().y() - previousPosition.y) % 15 != 0 && (currentDirection == DOWN || currentDirection == UP))
-                move(cords.x * 30, previousPosition.y - 15);
-            if(abs(pos().x() - previousPosition.x) % 15 != 0 && (currentDirection == LEFT || currentDirection == RIGHT))
-                move(previousPosition.x - 15, cords.y * 30);
-            step *= 3;
-            currentDirection = NO_DIR;
-            color = orginalColor;
-            vector<pair<int, double>> pathOptions;
-            getPathOptions(pathOptions);
-            comparePaths(pathOptions);
-            currentDirection = nextDirection;
-        }
+    if(play && abs(pos().x() - player->pos().x()) <= COLISION_ERROR && abs(pos().y() - player->pos().y()) <= COLISION_ERROR){
+        if(stage == FRIGHTENED) colideWithPlayerWhileFrightened();
         else player->decreaseHealth();
     }
 }
 
 void Ghost::waitToGetFree(bool waitWhile){
+    if(!play || active) return;
     waitingTime++;
-    if(waitWhile);
-    else{
-        if(pos().x() != 14 * 30 - 15){
-            if(pos().x() < 14 * 30 - 15) move(pos().x() + step, pos().y());
-            else move(pos().x() - step, cords.y * 30);
-        }
-        else if(pos().y() != 11 * 30) move(pos().x(), pos().y() - step);
-        else{
-            active = true;
-            setStartPos(11, 14);
-            vector<pair<int, double>> pathOptions;
-            currentDirection = NO_DIR;
-            getPathOptions(pathOptions);
-            comparePaths(pathOptions);
-            currentDirection = nextDirection;
-        }
+    if(waitWhile) return;
+    if(pos().x() != CENTER_CAGE_POS_X * TILE_SIZE - (TILE_SIZE / 2)){
+        if(pos().x() < CENTER_CAGE_POS_X * TILE_SIZE - (TILE_SIZE / 2)) move(pos().x() + step, pos().y());
+        else move(pos().x() - step, cords.y * TILE_SIZE);
     }
-}
-
-void Ghost::changeToHase(){
-    if(stage == SCOUT && framesInStage == 7 * FRAMES_PER_SECOND){
-        stage = HASE;
-        framesInStage = 0;
+    else if(pos().y() != OUTSIDE_CAGE_POS_Y * TILE_SIZE) move(pos().x(), pos().y() - step);
+    else{
+        active = true;
+        setStartPos(OUTSIDE_CAGE_POS_Y, OUTSIDE_CAGE_POS_X);
+        vector<pair<int, double>> pathOptions;
+        currentDirection = NO_DIR;
+        getPathOptions(pathOptions);
+        comparePaths(pathOptions);
+        currentDirection = nextDirection;
     }
 }
 
@@ -184,56 +195,62 @@ int Ghost::calculateHaseTargetY(){return 0;}
 
 void Ghost::scout(){}
 
-void Ghost::hase(int targetY, int targetX){
+void Ghost::hase(){
     if(stage == HASE){
-        target.x = targetX;
-        target.y = targetY;
+        target.x = calculateHaseTargetX();
+        target.y = calculateHaseTargetY();
     }
 }
 
 void Ghost::changeToScout(){
-    if(stage == HASE && framesInStage == 20 * FRAMES_PER_SECOND){
+    if(stage == HASE && framesInStage == HASEING_TIME * FRAMES_PER_SECOND){
         stage = SCOUT;
         framesInStage = 0;
         scout();
     }
 }
 
+void Ghost::changeToHase(){
+    if(stage == SCOUT && framesInStage == SCOUTING_TIME * FRAMES_PER_SECOND){
+        stage = HASE;
+        framesInStage = 0;
+    }
+}
+
 void Ghost::goToJail(){
-    if(pos().y() == 11 * 30 && pos().x() == 14 * 30 - 15){
+    if(pos().y() == OUTSIDE_CAGE_POS_Y * TILE_SIZE && pos().x() == OUTSIDE_CAGE_POS_X * TILE_SIZE - (TILE_SIZE / 2)){
         currentDirection = NO_DIR;
         nextDirection = NO_DIR;
         posToGoToJail = true;
     }
-    if(posToGoToJail){
-        if(pos().y() < 14 * 30) move(pos().x(), pos().y() + step);
-        else{
-            play = true;
-            active = false;
-            posToGoToJail = false;
-            step = STEP;
-            scout();
-        }
+    if(!posToGoToJail) return;
+    if(pos().y() < CENTER_CAGE_POS_Y * TILE_SIZE) move(pos().x(), pos().y() + step);
+    else{
+        play = true;
+        active = false;
+        posToGoToJail = false;
+        step = STEP;
+        scout();
     }
 }
 
 void Ghost::moveSprite(){
     if(start) setStartPos(cords.y, cords.x);
-    if(active){
-        framesInStage++;
-        makeStep();
-        changeCords();
-        teleport();
-        choosePath();
-        changeDirection();
-        beFrightened();
-        colideWithPlayer();
-        if(play){
-            changeToHase();
-            hase(calculateHaseTargetY(), calculateHaseTargetX());
-        }
-        else goToJail();
+    if(!active) return;
+    framesInStage++;
+    makeStep();
+    changeCords();
+    teleport();
+    choosePath();
+    changeDirection();
+    beFrightened();
+    colideWithPlayer();
+    if(play){
+        changeToScout();
+        changeToHase();
+        hase();
     }
+    else goToJail();
 }
 
 void Ghost::restartPosition(){
@@ -248,14 +265,13 @@ void Ghost::restartPosition(){
 }
 
 void Ghost::getVunerable(){
-    if(active){
-        color = QColor("#111155");
-        previousStage = stage;
-        framesInPreviousStage = framesInStage;
-        stage = FRIGHTENED;
-        framesInStage = 0;
-        update();
-    }
+    if(!active) return;
+    color = QColor(BLUE);
+    previousStage = stage;
+    framesInPreviousStage = framesInStage;
+    stage = FRIGHTENED;
+    framesInStage = 0;
+    update();
 }
 
 void Ghost::startPlaying(){

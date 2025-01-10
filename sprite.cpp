@@ -1,4 +1,5 @@
 #include "sprite.h"
+#include "defines.h"
 
 #include <QDebug>
 
@@ -12,12 +13,12 @@ Sprite::Sprite(pair<int, int> startingPoint, QWidget* parent) : QWidget(parent){
     play = false;
     map.open("map.txt");
     string row;
-    for(int i = 0; i < 93; i++){
+    for(int i = 0; i < MAP_HEIGHT; i++){
         getline(map, row);
-        if((i - 1)%3 != 0) continue;
-        for (int j = 1; j < 83; j+=3){
-            if(row[j] == '#' || row[j] == '^') simpleMap[(i - 1) / 3][(j - 1) / 3] = 1;
-            else simpleMap[(i - 1) / 3][(j - 1) / 3] = 0;
+        if((i - 1) % SCALE != 0) continue;
+        for (int j = 1; j < MAP_WIDTH - 1; j+=SCALE){
+            if(row[j] == '#' || row[j] == '^') simpleMap[(i - 1) / SCALE][(j - 1) / SCALE] = WALL;
+            else simpleMap[(i - 1) / SCALE][(j - 1) / SCALE] = PATH;
         }
     }
 }
@@ -27,16 +28,18 @@ void Sprite::paintEvent(QPaintEvent* /*evenet*/){}
 void Sprite::setStartPos(int y, int x){
     cords.y = y;
     cords.x = x; 
-    move(cords.x * 30 - 15, cords.y * 30);
-    previousPosition.x = pos().x() + 15;
+    move(cords.x * TILE_SIZE - TILE_SIZE / 2, cords.y * TILE_SIZE);
+    previousPosition.x = pos().x() + TILE_SIZE / 2;
     previousPosition.y = pos().y();
     start = false;
 }
 
 void Sprite::stopSprite(){
-    currentDirection = NO_DIR;
-    nextDirection = NO_DIR;
-    
+    if(getTileInFront(currentDirection) == 1){ 
+        currentDirection = NO_DIR;
+        nextDirection = NO_DIR;
+        update();
+    }
 }
 
 void Sprite::makeStep(){
@@ -44,42 +47,26 @@ void Sprite::makeStep(){
         case(NO_DIR):
             break;
         case(UP):
-            if(simpleMap[cords.y - 1][cords.x] == 1){
-                stopSprite();
-                break; 
-            }
-            move(cords.x * 30, pos().y() - step);
+            move(cords.x * TILE_SIZE, pos().y() - step);
             break;
         case(LEFT):
-            if(simpleMap[cords.y][cords.x - 1] == 1){
-                stopSprite();
-                break; 
-            }
-            move(pos().x() - step, cords.y * 30);
+            move(pos().x() - step, cords.y * TILE_SIZE);
             break;
         case(DOWN):
-            if(simpleMap[cords.y + 1][cords.x] == 1){
-                stopSprite();
-                break; 
-            }
-            move(cords.x * 30, pos().y() + step);
+            move(cords.x * TILE_SIZE, pos().y() + step);
             break;
         case(RIGHT):
-            if(simpleMap[cords.y][cords.x + 1] == 1){
-                stopSprite();
-                break; 
-            }
-            move(pos().x() + step, cords.y * 30);
+            move(pos().x() + step, cords.y * TILE_SIZE);
             break;
     }
 }
 
 void Sprite::changeCords(){
-    if(abs(previousPosition.x - pos().x()) == 30){
+    if(abs(previousPosition.x - pos().x()) == TILE_SIZE){
         cords.x += (previousPosition.x - pos().x() < 0)? 1 : -1;
         previousPosition.x = pos().x(); 
     }
-    else if(abs(previousPosition.y - pos().y()) == 30){
+    else if(abs(previousPosition.y - pos().y()) == TILE_SIZE){
         cords.y += (previousPosition.y - pos().y() < 0)? 1 : -1;
         previousPosition.y = pos().y(); 
     }
@@ -89,31 +76,27 @@ void Sprite::changeDirection(){
     switch(nextDirection){
         case(NO_DIR):
             break;
-        case(UP):
-            if(simpleMap[cords.y - 1][cords.x] == 0 && currentDirection != UP && previousPosition.x == pos().x()) currentDirection = UP;
+        case(UP): case(DOWN):
+            if(getTileInFront(nextDirection) == 0 && currentDirection != nextDirection && previousPosition.x == pos().x())
+                currentDirection = nextDirection;
             break;
-        case(LEFT):
-            if(simpleMap[cords.y][cords.x - 1] == 0 && currentDirection != LEFT && previousPosition.y == pos().y()) currentDirection = LEFT;
-            break;
-        case(DOWN):
-            if(simpleMap[cords.y + 1][cords.x] == 0 && currentDirection != DOWN && previousPosition.x == pos().x()) currentDirection = DOWN;
-            break;
-        case(RIGHT):
-            if(simpleMap[cords.y][cords.x + 1] == 0 && currentDirection != RIGHT && previousPosition.y == pos().y()) currentDirection = RIGHT;
+        case(LEFT): case(RIGHT):
+            if(getTileInFront(nextDirection) == 0 && currentDirection != nextDirection && previousPosition.y == pos().y())
+                currentDirection = nextDirection;
             break;
     }
 }
 
 void Sprite::teleport(){
     if(cords.x == 0 && currentDirection == LEFT){
-        cords.x = 27;
-        move(cords.x * 30, cords.y * 30);
+        cords.x = SIMPLE_MAP_WIDHT - 1;
+        move(cords.x * TILE_SIZE, cords.y * TILE_SIZE);
         previousPosition.x = pos().x();
         previousPosition.y = pos().y();
     }
-    else if(cords.x == 27 && currentDirection == RIGHT){
+    else if(cords.x == SIMPLE_MAP_WIDHT - 1 && currentDirection == RIGHT){
         cords.x = 0;
-        move(cords.x * 30, cords.y * 30);
+        move(cords.x * TILE_SIZE, cords.y * TILE_SIZE);
         previousPosition.x = pos().x();
         previousPosition.y = pos().y();
     }
@@ -133,6 +116,7 @@ int Sprite::getTileInFront(int direction){
 
 void Sprite::moveSprite(){
     if(start) setStartPos(cords.y, cords.x);
+    stopSprite();
     makeStep();
     changeCords();
     teleport();

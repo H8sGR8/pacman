@@ -149,7 +149,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		pacman.h \
 		sprite.h \
 		points.h \
-		ghostTypes.h game.cpp \
+		ghostTypes.h \
+		defines.h game.cpp \
 		ghost.cpp \
 		map.cpp \
 		pacman.cpp \
@@ -335,7 +336,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ghost.h map.h pacman.h sprite.h points.h ghostTypes.h $(DISTDIR)/
+	$(COPY_FILE) --parents ghost.h map.h pacman.h sprite.h points.h ghostTypes.h defines.h $(DISTDIR)/
 	$(COPY_FILE) --parents game.cpp ghost.cpp map.cpp pacman.cpp sprite.cpp points.cpp ghostTypes.cpp $(DISTDIR)/
 
 
@@ -403,13 +404,17 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 game.o: game.cpp map.h \
 		pacman.h \
 		sprite.h \
-		points.h
+		points.h \
+		ghostTypes.h \
+		ghost.h \
+		defines.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game.o game.cpp
 
 ghost.o: ghost.cpp ghost.h \
 		sprite.h \
 		pacman.h \
-		points.h
+		points.h \
+		defines.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ghost.o ghost.cpp
 
 map.o: map.cpp map.h \
@@ -417,25 +422,30 @@ map.o: map.cpp map.h \
 		sprite.h \
 		points.h \
 		ghostTypes.h \
-		ghost.h
+		ghost.h \
+		defines.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o map.o map.cpp
 
 pacman.o: pacman.cpp pacman.h \
 		sprite.h \
-		points.h
+		points.h \
+		defines.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o pacman.o pacman.cpp
 
-sprite.o: sprite.cpp sprite.h
+sprite.o: sprite.cpp sprite.h \
+		defines.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sprite.o sprite.cpp
 
-points.o: points.cpp points.h
+points.o: points.cpp points.h \
+		defines.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o points.o points.cpp
 
 ghostTypes.o: ghostTypes.cpp ghostTypes.h \
 		ghost.h \
 		sprite.h \
 		pacman.h \
-		points.h
+		points.h \
+		defines.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ghostTypes.o ghostTypes.cpp
 
 moc_pacman.o: moc_pacman.cpp 

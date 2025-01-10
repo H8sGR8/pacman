@@ -1,9 +1,10 @@
-#include <ghostTypes.h>
+#include "ghostTypes.h"
+#include "defines.h"
 
 #include <cmath>
 
 Pink::Pink(pair<int, int> startingPoint, Pacman *player, QWidget* parent) : Ghost(startingPoint, player, parent){
-    color = QColor("#ff6688");
+    color = QColor(PINK);
     orginalColor = color;
     scout();
 }
@@ -14,27 +15,26 @@ void Pink::scout(){
 }
 
 int Pink::calculateHaseTargetX(){
-    return player->getXOfNTileInFront(player->currentDirection, 4);
+    return player->getXOfNTileInFront(player->currentDirection, TILES_IN_FRON_OF_PACMAN);
 }
 
 int Pink::calculateHaseTargetY(){
-    return player->getYOfNTileInFront(player->currentDirection, 4);
+    return player->getYOfNTileInFront(player->currentDirection, TILES_IN_FRON_OF_PACMAN);
 }
 
 void Pink::moveSprite(){
     Ghost::moveSprite();
-    if(play && active)changeToScout();
-    if(play && !active)waitToGetFree(waitingTime < PINKY_WAITING_TIME * FRAMES_PER_SECOND);
+    waitToGetFree(waitingTime < PINKY_WAITING_TIME * FRAMES_PER_SECOND);
 }
 
 void Pink::restartPosition(){
     Ghost::restartPosition();
-    setStartPos(14, 14);
+    setStartPos(RIGHT_CAGE_POS_Y, RIGHT_CAGE_POS_Y);
     scout();
 }
 
 Orange::Orange(pair<int, int> startingPoint, Pacman *player, QWidget* parent) : Ghost(startingPoint, player, parent){
-    color = QColor("#ff8800");
+    color = QColor(ORANGE);
     orginalColor = color;
     scout();
 }
@@ -45,27 +45,26 @@ void Orange::scout(){
 }
 
 int Orange::calculateHaseTargetX(){
-    return (sqrt(pow(player->cords.x, 2) + pow(cords.x, 2)) < 8)? PINKY_CLYDE_SCOUT_TARGET_X : player->cords.x;
+    return (sqrt(pow(player->cords.x, 2) + pow(cords.x, 2)) < DISTANCE_TO_HASE)? PINKY_CLYDE_SCOUT_TARGET_X : player->cords.x;
 }
 
 int Orange::calculateHaseTargetY(){
-    return (sqrt(pow(player->cords.y, 2) + pow(cords.y, 2)) < 8)? INKY_CLYDE_SCOUT_TARGEY_Y : player->cords.y;
+    return (sqrt(pow(player->cords.y, 2) + pow(cords.y, 2)) < DISTANCE_TO_HASE)? INKY_CLYDE_SCOUT_TARGEY_Y : player->cords.y;
 }
 
 void Orange::moveSprite(){
     Ghost::moveSprite();
-    if(play && active)changeToScout();
-    if(play && !active)waitToGetFree(player->bigPointsColected < 3 || waitingTime < CLYDE_WAITING_TIME * FRAMES_PER_SECOND);
+    waitToGetFree(player->bigPointsColected < BIG_POINTS_COLECTED_TO_FREE || waitingTime < CLYDE_WAITING_TIME * FRAMES_PER_SECOND);
 }
 
 void Orange::restartPosition(){
     Ghost::restartPosition();
-    setStartPos(14, 16);
+    setStartPos(RIGHT_CAGE_POS_Y, RIGHT_CAGE_POS_X);
     scout();
 }
 
 Cyan::Cyan(pair<int, int> startingPoint, Pacman *player, Red *blinky, QWidget* parent) : Ghost(startingPoint, player, parent){
-    color = QColor("#00ffff");
+    color = QColor(CYAN);
     orginalColor = color;
     this->blinky = blinky;
     scout();
@@ -77,28 +76,27 @@ void Cyan::scout(){
 }
 
 int Cyan::calculateHaseTargetX(){
-    return 2 * player->getXOfNTileInFront(player->currentDirection, 2) - blinky->cords.x;
+    return 2 * player->getXOfNTileInFront(player->currentDirection, TILES_IN_FRON_OF_PACMAN / 2) - blinky->cords.x;
 }
 
 int Cyan::calculateHaseTargetY(){
-    return 2 * player->getYOfNTileInFront(player->currentDirection, 2) - blinky->cords.y;
+    return 2 * player->getYOfNTileInFront(player->currentDirection, TILES_IN_FRON_OF_PACMAN / 2) - blinky->cords.y;
 }
 
 void Cyan::moveSprite(){
     Ghost::moveSprite();
-    if(play && active)changeToScout();
-    if(play && !active)waitToGetFree(player->pointsColected < 30 || waitingTime < INKY_WAITING_TIME * FRAMES_PER_SECOND);
+    waitToGetFree(player->pointsColected < POINTS_COLECTED_TO_FREE || waitingTime < INKY_WAITING_TIME * FRAMES_PER_SECOND);
 }
 
 void Cyan::restartPosition(){
     Ghost::restartPosition();
-    setStartPos(14, 12);
+    setStartPos(LEFT_CAGE_POS_Y, LEFT_CAGE_POS_X);
     target.x = BLINKY_INKY_SCOUT_TARGET_X;
     target.y = INKY_CLYDE_SCOUT_TARGEY_Y;
 }
 
 Red::Red(pair<int, int> startingPoint, Pacman *player, QWidget* parent) : Ghost(startingPoint, player, parent){
-    color = QColor("#ff0000");
+    color = QColor(RED);
     orginalColor = color;
     scout();
 }
@@ -118,12 +116,11 @@ int Red::calculateHaseTargetY(){
 
 void Red::moveSprite(){
     Ghost::moveSprite();
-    if(play && active)changeToScout();
-    if(play && !active)waitToGetFree(waitingTime < BLINKY_WAITING_TIME * FRAMES_PER_SECOND);
+    waitToGetFree(waitingTime < BLINKY_WAITING_TIME * FRAMES_PER_SECOND);
 }
 
 void Red::restartPosition(){
     Ghost::restartPosition();
-    setStartPos(11, 14);
+    setStartPos(OUTSIDE_CAGE_POS_Y, OUTSIDE_CAGE_POS_X);
     scout();
 }

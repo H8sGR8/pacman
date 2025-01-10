@@ -4,14 +4,6 @@
 #include <fstream>
 using namespace std;
 
-#define NO_DIR 0
-#define UP 1
-#define LEFT 2
-#define DOWN 3
-#define RIGHT 4
-
-#define STEP 5
-
 class Sprite : public QWidget{
     protected:
         ifstream map;

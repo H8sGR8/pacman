@@ -1,0 +1,103 @@
+#pragma once
+
+#define YELLOWISH "#777722"
+#define LIGHT_YELLOWISH "#aaaa00"
+#define PINK "#ff6688"
+#define RED "#ff0000"
+#define ORANGE "#ff8800"
+#define CYAN "#00ffff"
+#define YELLOW "#ffff00"
+#define BLUE "#111155"
+#define DARK_BLUE "#0d0d1d"
+#define GRAY "#2f2f2f"
+#define BLACK "#000000"
+#define WHITE "#ffffff"
+
+#define MOUTH_ANGLE_STEP 10
+#define MAX_HEALTH 3
+#define COLECTABLE_POINTS 246
+
+#define SMALL_POINT_VALUE 10
+#define BIG_POINT_VALUE 50
+#define SMALL_POINT_DIAMETER 10
+#define BIG_POINT_DIAMETER 30
+
+#define SCOUT 1
+#define HASE 2
+#define FRIGHTENED 3
+
+#define REFRESH_FREQUENCY 50
+#define FRAMES_PER_SECOND (1000 / REFRESH_FREQUENCY)
+#define SCOUTING_TIME 7
+#define HASEING_TIME 20
+#define FRIGHTENED_TIME 5
+#define BLINKY_WAITING_TIME 0
+#define PINKY_WAITING_TIME 3
+#define INKY_WAITING_TIME 6
+#define CLYDE_WAITING_TIME 9
+
+#define PATH 0
+#define WALL 1 
+#define CROSSROAD 2
+
+#define BLINKY_INKY_SCOUT_TARGET_X 25
+#define BLINKY_PINKY_SCOUT_TARGEY_Y 0
+#define PINKY_CLYDE_SCOUT_TARGET_X 2
+#define INKY_CLYDE_SCOUT_TARGEY_Y 30
+#define GHOST_VALUE 200
+#define LEFT_EYE 10, 10, 8, 10
+#define RIGHT_EYE 22, 10, 8, 10
+#define PUPIL_SIZE 5
+#define LEFT_PUPIL_POS_X 12
+#define LEFT_PUPIL_POS_Y 12
+#define RIGHT_PUPIL_POS_X 24
+#define RIGHT_PUPIL_POS_Y 12
+#define PUPIL_SHIFT 2
+#define POINTS_COLECTED_TO_FREE 30
+#define BIG_POINTS_COLECTED_TO_FREE 3
+#define DISTANCE_TO_HASE 8
+#define TILES_IN_FRON_OF_PACMAN 4
+
+#define NO_DIR 0
+#define UP 1
+#define LEFT 2
+#define DOWN 3
+#define RIGHT 4
+
+#define STEP 5
+#define COLISION_ERROR 10
+
+#define SPRITE_SIZE 40
+#define BLOCK_SIZE 10
+#define TILE_SIZE 30
+
+#define PACMAN_START_POS_X 14
+#define PACMAN_START_POS_Y 17
+#define OUTSIDE_CAGE_POS_X 14
+#define OUTSIDE_CAGE_POS_Y 11
+#define LEFT_CAGE_POS_X 12
+#define LEFT_CAGE_POS_Y 14
+#define RIGHT_CAGE_POS_X 16
+#define RIGHT_CAGE_POS_Y 14
+#define CENTER_CAGE_POS_X 14
+#define CENTER_CAGE_POS_Y 14
+
+#define MAP_WIDTH_PIXELS 853
+#define MAP_HEIGHT_PIXELS 943
+#define MAP_WIDTH 84
+#define MAP_HEIGHT 93
+#define SCALE 3
+#define SIMPLE_MAP_WIDHT (MAP_WIDTH / SCALE)
+#define SIMPLE_MAP_HEIGHT (MAP_HEIGHT / SCALE)
+
+#define ANGLE_MULTIPLIER 16
+#define FULL_CIRCLE 360
+#define QUATER_CIRCLE 90
+#define HALF_CIRCLE 180
+#define THREE_QUATERS_CIRCLE 270
+
+#define MAP_POS 1, 1, 10, 3
+#define POINTS_POS 1, 4
+#define HEALTH_POS 2, 4
+#define QUIT_POS 5, 4
+#define GAME_OVER_POS 5, 2

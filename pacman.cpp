@@ -1,22 +1,45 @@
 #include "pacman.h"
+#include "defines.h"
 
 #include <QPainter>
 #include <QKeyEvent>
 
 Pacman::Pacman(pair<int, int> startingPoint, QWidget* parent) : Sprite(startingPoint, parent){
-    color = QColor("#ffff00");
+    color = QColor(YELLOW);
     points = 0;
     pointsColected = 0;
     bigPointsColected = 0;
-    health = 3;
-    for(int i = 0; i < 31; i++) for(int j = 0; j < 28; j++) pointsMap[i][j] = NULL;
+    health = MAX_HEALTH;
+    openingMouth = true;
+    mouthWidth = 0;
+    for(int i = 0; i < SIMPLE_MAP_HEIGHT; i++) for(int j = 0; j < SIMPLE_MAP_WIDHT; j++) pointsMap[i][j] = NULL;
 }
 
 void Pacman::paintEvent(QPaintEvent* /*event*/){
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(color));
-    painter.drawPie(QRect(0,0,40,40), 0, 360 * 16);
+    switch(currentDirection){
+        case(NO_DIR):
+            painter.drawPie(QRect(0,0,SPRITE_SIZE,SPRITE_SIZE), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
+            break;
+        case(LEFT):
+            painter.drawPie(QRect(0,0,SPRITE_SIZE,SPRITE_SIZE),
+                            (HALF_CIRCLE + mouthWidth) * ANGLE_MULTIPLIER, (FULL_CIRCLE - mouthWidth * 2) * ANGLE_MULTIPLIER);
+            break;
+        case(UP):
+            painter.drawPie(QRect(0,0,SPRITE_SIZE,SPRITE_SIZE),
+                            (QUATER_CIRCLE + mouthWidth) * ANGLE_MULTIPLIER, (FULL_CIRCLE - mouthWidth * 2) * ANGLE_MULTIPLIER);
+            break;
+        case(DOWN):
+            painter.drawPie(QRect(0,0,SPRITE_SIZE,SPRITE_SIZE),
+                            (THREE_QUATERS_CIRCLE + mouthWidth) * ANGLE_MULTIPLIER, (FULL_CIRCLE - mouthWidth * 2) * ANGLE_MULTIPLIER);
+            break;
+        case(RIGHT):
+            painter.drawPie(QRect(0,0,SPRITE_SIZE,SPRITE_SIZE),
+                            mouthWidth * ANGLE_MULTIPLIER, (FULL_CIRCLE - mouthWidth * 2) * ANGLE_MULTIPLIER);
+            break;
+    }
 }
 
 void Pacman::keyPressEvent(QKeyEvent *event){
@@ -55,7 +78,7 @@ void Pacman::decreaseHealth(){
     health--;
     emit healthChanged(health);
     emit restartPosition();
-    setStartPos(17, 14);
+    setStartPos(PACMAN_START_POS_Y, PACMAN_START_POS_X);
     currentDirection = NO_DIR;
     nextDirection = NO_DIR;
     play = false;
@@ -64,6 +87,13 @@ void Pacman::decreaseHealth(){
 void Pacman::increaseBigPointsColected(){
     bigPointsColected++;
     emit attackGhosts();
+}
+
+void Pacman::moveMouth(){
+    if(currentDirection == NO_DIR) return;
+    if(mouthWidth == MOUTH_ANGLE_STEP * 3) openingMouth = false;
+    if(mouthWidth == 0) openingMouth = true;
+    mouthWidth += (openingMouth)? MOUTH_ANGLE_STEP : -MOUTH_ANGLE_STEP;
 }
 
 void Pacman::eatPoint(){
@@ -75,7 +105,8 @@ void Pacman::eatPoint(){
 }
 
 void Pacman::goToNextLevel(){
-    for(int i = 0; i < 31; i++) for(int j = 0; j < 28; j++) if(pointsMap[i][j] != NULL){
+    if(pointsColected < COLECTABLE_POINTS) return;
+    for(int i = 0; i < SIMPLE_MAP_HEIGHT; i++) for(int j = 0; j < SIMPLE_MAP_WIDHT; j++) if(pointsMap[i][j] != NULL){
         pointsMap[i][j]->colected = false;
         pointsMap[i][j]->setUpdatesEnabled(true);
     }
@@ -94,7 +125,8 @@ void Pacman::loseGame(){
 
 void Pacman::moveSprite(){
     Sprite::moveSprite();
+    moveMouth();
     eatPoint();
-    if(pointsColected == 246) goToNextLevel();
+    goToNextLevel();
     loseGame();
 }

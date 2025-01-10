@@ -1,5 +1,6 @@
 #include "map.h"
 #include "pacman.h"
+#include "defines.h"
 
 #include <QApplication>
 #include <QGridLayout>
@@ -16,8 +17,10 @@ class Game : public QWidget{
 		QLabel *points;
 		QLabel *health;
 		QLabel *gameOver;
-		void updatePoints(int);
-		void updateHealth(int);
+		virtual void updatePoints(int);
+		virtual void updateHealth(int);
+		virtual void connectObjects();
+		virtual void setupGame();
 	public:
 		Map *map;
 		Game(QWidget *parent = nullptr);
@@ -32,31 +35,38 @@ void Game::updateHealth(int newHealth){
 	if(newHealth == 0) gameOver->setVisible(true);
 }
 
-Game::Game(QWidget *parent) : QWidget(parent)
-{
-	setPalette(QPalette(QColor("#2f2f2f")));
+void Game::connectObjects(){
+	connect(quit, &QPushButton::clicked, qApp, &QApplication::quit);
+	connect(map->player, &Pacman::pointsChanged, this, &Game::updatePoints);
+	connect(map->player, &Pacman::healthChanged, this, &Game::updateHealth);
+}
+
+void Game::setupGame(){
+	QGridLayout	*grid = new QGridLayout;
+	grid->addWidget(map, MAP_POS);
+	grid->addWidget(points, POINTS_POS);
+	grid->addWidget(health, HEALTH_POS);
+	grid->addWidget(quit, QUIT_POS);
+	grid->addWidget(gameOver, GAME_OVER_POS);
+	setLayout(grid);
+}
+
+Game::Game(QWidget *parent) : QWidget(parent){
+	setPalette(QPalette(QColor(GRAY)));
 	resize(1200, 1000);
 	move(QApplication::desktop()->geometry().center() - rect().center());
 	map = new Map();
 	quit = new QPushButton("QUIT");
-	connect(quit, &QPushButton::clicked, qApp, &QApplication::quit);
 	points = new QLabel;
-	connect(map->player, &Pacman::pointsChanged, this, &Game::updatePoints);
 	health = new QLabel;
-	connect(map->player, &Pacman::healthChanged, this, &Game::updateHealth);
 	gameOver = new QLabel;
 	points->setText("Points: 0");
 	health->setText("Health: 3");
 	gameOver->setText("Game Over :(");
-	QGridLayout	*grid = new QGridLayout;
-	grid->addWidget(map, 1, 1, 10, 3);
-	grid->addWidget(points, 1, 4);
-	grid->addWidget(health, 2, 4);
-	grid->addWidget(quit, 5, 4);
-	grid->addWidget(gameOver, 5, 2);
-	setLayout(grid);
 	gameOver->setVisible(false);
 	gameOver->setStyleSheet("font: 40pt; color: red;");
+	connectObjects();
+	setupGame();
 }
 
 int main(int argc, char *argv[])

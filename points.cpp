@@ -1,4 +1,5 @@
 #include "points.h"
+#include "defines.h"
 
 #include <QPainter>
 
@@ -10,7 +11,7 @@ void Point::paintEvent(QPaintEvent* /*event*/){
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(color));
-    painter.drawPie(QRect(0, 0, diameter, diameter), 0, 360*16);
+    painter.drawPie(QRect(0, 0, diameter, diameter), 0, FULL_CIRCLE * ANGLE_MULTIPLIER);
 }
 
 int Point::getPoints(){
@@ -23,9 +24,9 @@ int Point::getEaten(){
 }
 
 BigPoint::BigPoint(QWidget *parent): Point(parent){
-    color = QColor("#aaaa00");
-    diameter = 30;
-    pointValue = 50;
+    color = QColor(LIGHT_YELLOWISH);
+    diameter = BIG_POINT_DIAMETER;
+    pointValue = BIG_POINT_VALUE;
 }
 
 int BigPoint::getEaten(){
@@ -34,7 +35,7 @@ int BigPoint::getEaten(){
 }
 
 SmallPoint::SmallPoint(QWidget *parent): Point(parent){
-    color = QColor("#777722");
-    diameter = 10;
-    pointValue = 10;
+    color = QColor(YELLOWISH);
+    diameter = SMALL_POINT_DIAMETER;
+    pointValue = SMALL_POINT_VALUE;
 }

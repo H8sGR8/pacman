@@ -10,11 +10,14 @@ class Pacman : public Sprite{
     protected:
         int points;
         int health;
+        bool openingMouth;
+        int mouthWidth;
         virtual void paintEvent(QPaintEvent*);
         virtual void keyPressEvent(QKeyEvent*);
         virtual void goToNextLevel();
         virtual void eatPoint();
         virtual void loseGame();
+        virtual void moveMouth();
     public slots:
         virtual void moveSprite();
         virtual void increaseBigPointsColected();

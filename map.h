@@ -1,15 +1,25 @@
 #pragma once
 
 #include "pacman.h"
+#include "ghostTypes.h"
 
+#include <QGridLayout>
 #include <QTimer>
 using namespace std;
 
 class Map : public QWidget{
-
-    private:
-        ifstream mapFile;
     protected:
+        ifstream mapFile;
+        Red *blinky;
+        Orange *clyde;
+        Cyan *inky;
+        Pink *pinky;
+        QGridLayout *grid;
+        virtual void connectObjects();
+        virtual void createMap(vector<pair<int, int>>&);
+        virtual void addBigPoints(vector<pair<int, int>>&);
+        virtual void addSprites();
+        virtual void setupMap();
         class Block : public QWidget{
             protected:
                 QColor color;
@@ -30,7 +40,7 @@ class Map : public QWidget{
                 Blockade(QWidget *parent = nullptr);
         };
     public slots:
-        void endGame();
+        virtual void endGame();
     public:
         QTimer *gameTimer;
         Pacman *player;
